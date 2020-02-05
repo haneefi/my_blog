@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:myblog/config.dart';
+import 'package:myblog/provider/ProductsProvider.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -6,65 +10,70 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-       
-        primarySwatch: Colors.green,
+    return MultiProvider(
+      providers: [
+     ChangeNotifierProvider(create: (_) => ProductProvider()),
+      ],
+      
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: TITLE,
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+        ),
+        home: Home(),
       ),
-      home: Home(),
     );
   }
 }
 
-class Home extends StatelessWidget{
-
+class Home extends StatefulWidget {
+   
+  @override
+  _HomeState createState() => _HomeState();
 }
 
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+class _HomeState extends State<Home> {
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-
-      _counter++;
-    });
+  void initState() {
+    
+    super.initState();
+    Provider.of<ProductProvider>(context, listen: false).getProductData();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
-
+     
     return Scaffold(
       appBar: AppBar(
+        title: Text(TITLE),
+      ),
+      body: Consumer<ProductProvider>(
 
-        title: Text(widget.title),
+        builder: (BuildContext context, ProductProvider value, Widget child) { 
+          if(value.loading)
+          {
+            return Center(child: CircularProgressIndicator(),);
+          }else{
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              child: ListView.builder(
+                itemBuilder: (BuildContext ctx,int index){
+                    return ListTile(
+                      title: Text(value.products[index].title.rendered.toString()),
+                    );
+                },
+                itemCount: value.products.length,
+                ),
+            );
+          }
+         },
+        
       ),
-      body: Center(
-   
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
-    
     );
   }
 }
+
