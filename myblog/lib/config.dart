@@ -1,3 +1,3 @@
-const String TITLE="Taif Al Emarat";
+const String TITLE="Haneef";
 // Back Slash '/' is mandatory
-const String URL="https://www.taifalemarat.com/";
+const String URL="https://www.haneef.tk/";
